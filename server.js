@@ -4,7 +4,7 @@ const cors = require("cors");
 const dns = require("dns");
 require("dotenv").config();
 
-// DNS fix (optional)
+// DNS fix (optional – safe to keep)
 try {
   dns.setServers(["8.8.8.8"]);
   console.log("DNS servers set to:", dns.getServers());
@@ -27,9 +27,22 @@ app.use("/api/auth", authRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/bookings", bookingRoutes);
 
-// test route
+// root route
 app.get("/", (req, res) => {
-  res.send("Room Booking API is running");
+  res.status(200).send("Room Booking API is running 🚀");
+});
+
+// health check (recommended for Render)
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK" });
+});
+
+// fallback for undefined routes
+app.use((req, res) => {
+  res.status(404).json({
+    message: "Route not found",
+    path: req.originalUrl,
+  });
 });
 
 // mongo connection
